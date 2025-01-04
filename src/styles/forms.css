@@ -1,0 +1,91 @@
+/* Universal container styles */
+.form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form headings */
+  .form-container h1 {
+    font-size: 1.75rem;
+    color: #0f172a;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  /* Form labels */
+  .form-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5563;
+  }
+  
+  /* Consistent input fields */
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #374151;
+    background-color: #f9fafb;
+    transition: all 0.3s ease;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #10b981;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  }
+  
+  /* Buttons */
+  .form-button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #10b981;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-button:hover {
+    background-color: #059669;
+  }
+  
+  /* Error messages */
+  .error-message {
+    color: #ef4444;
+    background-color: #fef2f2;
+    padding: 0.75rem;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .form-container {
+      padding: 1.5rem;
+    }
+    .form-container h1 {
+      font-size: 1.5rem;
+    }
+    .form-button {
+      padding: 0.5rem;
+    }
+  }
+  

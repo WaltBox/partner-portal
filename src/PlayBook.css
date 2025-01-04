@@ -1,0 +1,90 @@
+.playbook-container {
+    padding: 24px;
+    background: #f9fafb;
+    min-height: 100vh;
+    font-family: "Inter", sans-serif;
+  }
+  
+  .playbook-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1e293b;
+    margin-bottom: 24px;
+  }
+  
+  .playbook-subtitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 12px;
+  }
+  
+  .playbook-paragraph {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+  
+  .playbook-code {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: "Source Code Pro", monospace;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .playbook-code-error {
+    background: #b91c1c;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: "Source Code Pro", monospace;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .playbook-responses {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .playbook-response {
+    padding: 10px 16px;
+    background-color: #e5e7eb;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    color: #374151;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  }
+  
+  .playbook-response:hover {
+    background-color: #d1fae5;
+    border-color: #10b981;
+    color: #065f46;
+  }
+  
+  .playbook-error-details {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  .playbook-code-success {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: "Source Code Pro", monospace;
+    font-size: 14px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    border: 1px solid #10b981;
+  }
+  
+  
