@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/forms.css'; // Import the CSS file
+import '../styles/forms.css';
 
 const CompleteRegistration = () => {
   const [formData, setFormData] = useState({
@@ -18,36 +18,35 @@ const CompleteRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3004/api/partners/complete-registration', {
-        ...formData,
-        id: partnerId,
+      await axios.post(`http://localhost:3004/api/partners/${partnerId}/complete-registration`, {
+        person_of_contact: formData.name, // Assign formData.name to person_of_contact
+        email: formData.email,
+        password: formData.password,
+        phone_number: formData.phone_number,
       });
       navigate('/');
     } catch (err) {
       setError('Failed to complete registration');
     }
   };
+  
 
   return (
-    <div className="form-container">
+    <div className="form-container complete-registration">
       <h1>Complete Registration</h1>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit}>
-        {/* Name Field */}
         <label htmlFor="name">Name</label>
         <input
           type="text"
           id="name"
           placeholder="Enter your name"
           value={formData.name}
-          onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
           className="form-input"
         />
 
-        {/* Phone Number Field */}
         <label htmlFor="phone_number">Phone Number</label>
         <input
           type="text"
@@ -61,21 +60,17 @@ const CompleteRegistration = () => {
           className="form-input"
         />
 
-        {/* Email Field */}
         <label htmlFor="email">Email</label>
         <input
           type="email"
           id="email"
           placeholder="Enter email"
           value={formData.email}
-          onChange={(e) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
           className="form-input"
         />
 
-        {/* Password Field */}
         <label htmlFor="password">Password</label>
         <input
           type="password"
@@ -89,7 +84,6 @@ const CompleteRegistration = () => {
           className="form-input"
         />
 
-        {/* Submit Button */}
         <button type="submit" className="form-button">Register</button>
       </form>
     </div>

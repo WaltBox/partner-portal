@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import VerifyPartner from "./VerifyPartner";
-import CompleteRegistration from "./CompleteRegistration";
+import VerifyPartner from "../screens/VerifyPartner";
+import CompleteRegistration from "../screens/CompleteRegistration";
 
 const RegistrationFlow = () => {
   const [partner, setPartner] = useState(null);
