@@ -13,36 +13,62 @@ import './index.css';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check authentication status
+  // Check authentication status on component mount
   useEffect(() => {
     const token = localStorage.getItem('authToken');
-    setIsAuthenticated(!!token);
+    setIsAuthenticated(!!token); // Update authentication status based on token presence
   }, []);
+
+  // Helper for Protected Routes
+  const ProtectedRoute = ({ element }) => {
+    return isAuthenticated ? element : <Navigate to="/login" />;
+  };
 
   return (
     <div className="App">
       <Router>
         <Routes>
-          {/* Redirect if not logged in */}
-          {!isAuthenticated ? (
-            <>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/verify-partner" element={<VerifyPartner />} />
-              <Route path="/complete-registration" element={<CompleteRegistration />} />
-            </>
-          ) : (
-            <>
-              <Route path="/" element={<PartnerDashboard />} />
-              <Route path="/developers" element={<Developers />} />
-              <Route path="/settings" element={<Settings />} />
-            </>
-          )}
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* Public Routes */}
+          <Route
+            path="/"
+            element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />}
+          />
+          <Route
+            path="/login"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route path="/verify-partner" element={<VerifyPartner />} />
+          <Route path="/complete-registration" element={<CompleteRegistration />} />
+
+          {/* Authenticated Routes */}
+          <Route
+            path="/dashboard"
+            element={<ProtectedRoute element={<PartnerDashboard />} />}
+          />
+          <Route
+            path="/developers"
+            element={<ProtectedRoute element={<Developers />} />}
+          />
+          <Route
+            path="/settings"
+            element={<ProtectedRoute element={<Settings />} />}
+          />
+
+          {/* Catch-all Route */}
+          <Route
+            path="*"
+            element={<Navigate to={isAuthenticated ? '/dashboard' : '/'} />}
+          />
         </Routes>
       </Router>
 
-      {/* Example Footer */}
+      {/* Footer */}
       <footer className="bg-teal-50 text-gray-700 py-4 text-center">
         <p>&copy; {new Date().getFullYear()} HouseTabz. All rights reserved.</p>
       </footer>

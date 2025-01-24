@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../PlayBook.css";
+import "../styles/PlayBook.css";
 
 const PlayBook = () => {
   const [selectedError, setSelectedError] = useState(null);
@@ -7,180 +7,148 @@ const PlayBook = () => {
   const errorResponses = {
     400: {
       title: "400 Bad Request",
-      description:
-        "This error occurs when the request payload is missing required fields or contains invalid data.",
-      example: `
-HTTP/1.1 400 Bad Request
-{
-  "error": "Missing required fields"
+      description: "Missing required fields or invalid data.",
+      example: `{
+  "error": "Missing required fields",
+  "details": "transactionId, serviceName, and pricing are required"
 }`,
     },
     401: {
       title: "401 Unauthorized",
-      description:
-        "This error occurs when the API key or secret key is missing or invalid.",
-      example: `
-HTTP/1.1 401 Unauthorized
-{
-  "error": "Invalid API key or secret key"
+      description: "Invalid API key or missing credentials.",
+      example: `{
+  "error": "Invalid API key"
 }`,
     },
     404: {
       title: "404 Not Found",
-      description:
-        "This error occurs when the requested resource (e.g., staged request) does not exist.",
-      example: `
-HTTP/1.1 404 Not Found
-{
-  "error": "Staged request not found"
+      description: "Partner or staged request not found.",
+      example: `{
+  "error": "Partner not found"
 }`,
     },
   };
 
-  const successResponses = {
-    201: {
-      title: "201 Created",
-      description: "The request was successful, and the resource was created.",
-      example: `
-HTTP/1.1 201 Created
-{
-  "message": "Staged request created successfully",
-  "stagedRequest": {
-    "id": 1,
-    "transactionId": "TXN-12345",
-    "serviceName": "Electricity Plan",
-    "pricing": 99.99,
-    "userId": 101,
-    "status": "staged"
+  const quickStartCode = `<!-- Add HouseTabz SDK -->
+<script src="https://js.housetabz.com/v1/housetabz.min.js"></script>
+<div id="housetabz-button"></div>
+<script>
+  HouseTabz.init({
+    partnerId: 'YOUR_PARTNER_ID',
+    apiKey: 'YOUR_API_KEY',
+    environment: 'production',
+  });
+
+  HouseTabz.mount('#housetabz-button', {
+    serviceName: 'Your Service Name',
+    pricing: 99.99,
+    transactionId: 'YOUR-TXN-ID',
+  });
+</script>`;
+
+  const webhookExample = `const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
+app.post('/webhooks/housetabz', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['x-housetabz-signature'];
+
+  if (!verifySignature(req.body, signature, process.env.HOUSETABZ_WEBHOOK_SECRET)) {
+    return res.status(400).send('Invalid signature');
   }
-}`,
-    },
-    200: {
-      title: "200 OK",
-      description:
-        "The webhook payload was received successfully, and no further action is required.",
-      example: `
-HTTP/1.1 200 OK
-{
-  "message": "Webhook received successfully"
-}`,
-    },
-  };
+
+  const event = JSON.parse(req.body);
+
+  switch (event.event) {
+    case 'request.authorized':
+      await activateService(event.transactionId);
+      break;
+    case 'request.declined':
+      await cancelPendingRequest(event.transactionId);
+      break;
+  }
+
+  res.json({ received: true });
+});
+`;
 
   return (
     <div className="playbook-container">
-      <h1 className="playbook-title">Integration Playbook</h1>
+      {/* Header */}
+      <header className="playbook-header">
+        <h1>HouseTabz Integration Playbook</h1>
+        <p className="playbook-subtext">Simplify roommate service payments with HouseTabz.</p>
+      </header>
 
-      {/* Step 1: Staging a Request */}
-      <section>
-        <h2 className="playbook-subtitle">Step 1: Staging a Request</h2>
-        <p className="playbook-paragraph">
-          Partners must send a <code>POST</code> request to the following endpoint during the checkout process:
+      {/* Overview Section */}
+      <section className="playbook-section">
+        <h2>Overview</h2>
+        <p>
+          HouseTabz enables seamless integration of shared service payments. Here's how it works:
         </p>
-        <pre className="playbook-code">
-          POST /api/partners/:partnerId/staged-request HTTP/1.1
-          <br />
-          Host: api.housetabz.com
-          <br />
-          Headers:
-          <br />
-          &nbsp;&nbsp;Content-Type: application/json
-          <br />
-          &nbsp;&nbsp;api_key: YOUR_API_KEY
-          <br />
-          &nbsp;&nbsp;secret_key: YOUR_SECRET_KEY
-          <br />
-          Body:
-          <br />
-          {"{"}
-          <br />
-          &nbsp;&nbsp;"transactionId": "TXN-12345",
-          <br />
-          &nbsp;&nbsp;"serviceName": "Electricity Plan",
-          <br />
-          &nbsp;&nbsp;"pricing": 99.99,
-          <br />
-          &nbsp;&nbsp;"userId": 101
-          <br />
-          {"}"}
-        </pre>
+        <ul className="playbook-list">
+          <li>Create a service request at checkout</li>
+          <li>Roommates approve the request</li>
+          <li>Receive webhook notifications on approval</li>
+          <li>Activate the service after approval</li>
+        </ul>
+      </section>
 
-        {/* Success Response */}
-        <h3 className="playbook-subtitle">Success Response</h3>
-        <pre className="playbook-code-success">
-          {successResponses[201].example}
-        </pre>
+      {/* Quick Start Section */}
+      <section className="playbook-section">
+        <h2>Quick Start</h2>
+        <pre className="playbook-code-block">{quickStartCode}</pre>
+        <p>
+          Add the SDK to your checkout page and configure it with your transaction details. Use the
+          test environment during development.
+        </p>
+      </section>
 
-        {/* Error Responses */}
-        <h3 className="playbook-subtitle">Possible Errors</h3>
-        <div className="playbook-responses">
+      {/* Error Handling Section */}
+      <section className="playbook-section error-handling">
+        <h2>Error Handling</h2>
+        <p>Here are common errors and their solutions:</p>
+        <div className="playbook-errors">
           {Object.keys(errorResponses).map((code) => (
             <button
               key={code}
-              className="playbook-response"
-              onClick={() =>
-                setSelectedError(selectedError === code ? null : code)
-              }
+              className={`playbook-error-btn ${
+                selectedError === code ? "active-error" : ""
+              }`}
+              onClick={() => setSelectedError(selectedError === code ? null : code)}
             >
-              {code} - {errorResponses[code].title}
+              {code}: {errorResponses[code].title}
             </button>
           ))}
         </div>
         {selectedError && (
           <div className="playbook-error-details">
-            <h4 className="playbook-subtitle">
-              {errorResponses[selectedError].title}
-            </h4>
-            <p className="playbook-paragraph">
-              {errorResponses[selectedError].description}
-            </p>
-            <pre className="playbook-code-error">
-              {errorResponses[selectedError].example}
-            </pre>
+            <h3>{errorResponses[selectedError].title}</h3>
+            <p>{errorResponses[selectedError].description}</p>
+            <pre>{errorResponses[selectedError].example}</pre>
           </div>
         )}
       </section>
 
-      {/* Step 2: Handling Webhooks */}
-      <section>
-        <h2 className="playbook-subtitle">Step 2: Handling Webhooks</h2>
-        <p className="playbook-paragraph">
-          Once the transaction is staged, HouseTabz will notify your webhook
-          endpoint with the transaction's status. Ensure your server handles the
-          following payload correctly:
+      {/* Webhook Integration */}
+      <section className="playbook-section">
+        <h2>Webhook Integration</h2>
+        <p>
+          After setting up your webhook endpoint, you’ll receive real-time notifications for
+          request approvals. Here’s an example using Express.js:
         </p>
-        <pre className="playbook-code">
-          POST /your-webhook-endpoint HTTP/1.1
-          <br />
-          Headers:
-          <br />
-          &nbsp;&nbsp;Content-Type: application/json
-          <br />
-          Body:
-          <br />
-          {"{"}
-          <br />
-          &nbsp;&nbsp;"stagedRequestId": 123,
-          <br />
-          &nbsp;&nbsp;"status": "approved",
-          <br />
-          &nbsp;&nbsp;"transactionId": "TXN-12345",
-          <br />
-          &nbsp;&nbsp;"timestamp": "2024-01-01T12:00:00Z"
-          <br />
-          {"}"}
-        </pre>
+        <pre className="playbook-code-block">{webhookExample}</pre>
+      </section>
 
-        {/* Success Response */}
-        <h3 className="playbook-subtitle">Success Response</h3>
-        <pre className="playbook-code-success">
-          {successResponses[200].example}
-        </pre>
-
-        <p className="playbook-paragraph">
-          Your server should respond with an HTTP <code>200 OK</code> status
-          within 200ms to acknowledge receipt of the webhook.
-        </p>
+      {/* Best Practices */}
+      <section className="playbook-section best-practices">
+        <h2>Best Practices</h2>
+        <ul>
+          <li>Store the <code>transactionId</code> with pending orders</li>
+          <li>Verify webhook signatures for security</li>
+          <li>Respond to webhook notifications promptly</li>
+          <li>Test extensively in the development environment</li>
+        </ul>
       </section>
     </div>
   );

@@ -5,21 +5,38 @@ const APIKeys = () => {
   const [apiKeys, setApiKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [revealedKeys, setRevealedKeys] = useState({});
 
   useEffect(() => {
     const fetchApiKeys = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3004/api/partners/1/api-keys",
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          throw new Error("User not authenticated. Please log in.");
+        }
+
+        // Fetch the current user to get their ID
+        const currentUserResponse = await axios.get("http://localhost:3004/api/partners/current", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const partnerId = currentUserResponse.data.partner.id;
+        console.log("Fetched Partner ID:", partnerId);
+
+        // Use the partner ID to fetch the API keys
+        const apiKeysResponse = await axios.get(
+          `http://localhost:3004/api/partners/${partnerId}/api-keys`,
           {
             headers: {
-              api_key: "TEST_API_KEY_1",
-              secret_key: "TEST_SECRET_KEY_1",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        setApiKeys(response.data.apiKeys);
+
+        setApiKeys(apiKeysResponse.data.apiKeys);
+        console.log("Fetched API Keys:", apiKeysResponse.data.apiKeys);
+
         setLoading(false);
       } catch (err) {
         console.error("Error fetching API keys:", err);
@@ -31,17 +48,8 @@ const APIKeys = () => {
     fetchApiKeys();
   }, []);
 
-  const toggleReveal = (id) => {
-    setRevealedKeys((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  if (loading) {
-    return <p className="text-gray-600">Loading API keys...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
+  if (loading) return <p>Loading API keys...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
@@ -75,26 +83,12 @@ const APIKeys = () => {
                 <tr className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4">Secret Key</td>
                   <td className="py-3 px-4">
-                    {revealedKeys[key.id] ? (
-                      key.secret_key
-                    ) : (
-                      <button
-                        onClick={() => toggleReveal(key.id)}
-                        className="text-blue-600 underline focus:outline-none"
-                      >
-                        Reveal
-                      </button>
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    {revealedKeys[key.id] && (
-                      <button
-                        className="text-blue-600 underline focus:outline-none"
-                        onClick={() => navigator.clipboard.writeText(key.secret_key)}
-                      >
-                        Copy
-                      </button>
-                    )}
+                    <button
+                      className="text-blue-600 underline focus:outline-none"
+                      onClick={() => navigator.clipboard.writeText(key.secret_key)}
+                    >
+                      Copy
+                    </button>
                   </td>
                 </tr>
               </React.Fragment>

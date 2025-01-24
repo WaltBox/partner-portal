@@ -1,0 +1,89 @@
+.playbook-container {
+    font-family: 'Roboto', sans-serif;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 900px;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .playbook-header {
+    text-align: center;
+    background: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+  
+  .playbook-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .playbook-header .playbook-subtext {
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  .playbook-section {
+    margin-bottom: 30px;
+  }
+  
+  .playbook-section h2 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid #4caf50;
+    margin-bottom: 10px;
+    color: #4caf50;
+  }
+  
+  .playbook-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .playbook-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .playbook-code-block {
+    background: #272822;
+    color: #f8f8f2;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  
+  .error-handling .playbook-errors {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .playbook-error-btn {
+    background: #f1f1f1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .playbook-error-btn:hover {
+    background: #4caf50;
+    color: white;
+  }
+  
+  .playbook-error-details {
+    margin-top: 20px;
+    background: #fffbe0;
+    border-left: 4px solid #ffeb3b;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  
+  .best-practices ul {
+    padding-left: 20px;
+    list-style: square;
+  }
+  

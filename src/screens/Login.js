@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/forms.css';
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,7 +14,8 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:3004/api/partners/login', { email, password });
       localStorage.setItem('authToken', response.data.token);
-      navigate('/dashboard'); // Redirect to dashboard upon successful login
+      setIsAuthenticated(true); // Update authentication status
+      navigate('/dashboard'); // Redirect to dashboard
     } catch (err) {
       console.error('Login Error:', err.response?.data || err.message);
       setError('Invalid email or password');

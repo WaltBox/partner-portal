@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { Line } from "react-chartjs-2";
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,50 +25,77 @@ ChartJS.register(
 
 const PartnerDashboard = () => {
   const [partnerData, setPartnerData] = useState({
-    name: "Sample Partner",
-    housesUsingService: 25,
-    totalRevenue: "$12,500",
-    activeServices: 15,
+    name: "Loading...",
+    housesUsingService: 0,
+    totalRevenue: "$0",
+    activeServices: 0,
     webhookStats: {
-      totalRequests: 200,
-      successRate: "95%",
-      errorRate: "5%",
+      totalRequests: 0,
+      successRate: "0%",
+      errorRate: "0%",
     },
-    recentWebhooks: [
-      { id: 1, event: "Service Update", status: "Success", timestamp: "2024-01-01T12:00:00Z" },
-      { id: 2, event: "Payment Notification", status: "Error", timestamp: "2024-01-01T11:00:00Z" },
-    ],
-    topHousesBySpend: [
-      { houseName: "House Alpha", spend: "$1,200" },
-      { houseName: "House Beta", spend: "$950" },
-      { houseName: "House Gamma", spend: "$880" },
-    ],
-    recentPayments: [
-      { id: 1, houseName: "House Alpha", amount: "$500", date: "2024-01-01T12:00:00Z" },
-      { id: 2, houseName: "House Beta", amount: "$300", date: "2024-01-01T10:30:00Z" },
-      { id: 3, houseName: "House Gamma", amount: "$200", date: "2023-12-31T16:45:00Z" },
-    ],
-    paymentsReceived: [
-      { date: "2024-01-01", amount: 1500 },
-      { date: "2024-01-02", amount: 2000 },
-      { date: "2024-01-03", amount: 1800 },
-      { date: "2024-01-04", amount: 2200 },
-    ],
-    newAccounts: [
-      { date: "2024-01-01", count: 5 },
-      { date: "2024-01-02", count: 7 },
-      { date: "2024-01-03", count: 6 },
-      { date: "2024-01-04", count: 8 },
-    ],
+    recentWebhooks: [],
+    topHousesBySpend: [],
+    recentPayments: [],
+    paymentsReceived: [],
+    newAccounts: [],
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Data for the charts
+  const fetchPartnerData = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("No auth token found. Please log in.");
+      }
+
+      const response = await axios.get("http://localhost:3004/api/partners/current", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setPartnerData(response.data.partner);
+    } catch (error) {
+      console.error("Error fetching partner data:", error);
+      setError("Failed to load dashboard. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPartnerData();
+  }, []);
+
+  if (isLoading) {
+    return <div className="text-center mt-20">Loading dashboard...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center mt-20">
+        <p className="text-red-500">{error}</p>
+        <button
+          className="mt-4 px-4 py-2 bg-teal-500 text-white rounded"
+          onClick={() => {
+            localStorage.removeItem("authToken");
+            window.location.href = "/login"; // Redirect to login
+          }}
+        >
+          Log In Again
+        </button>
+      </div>
+    );
+  }
+
   const paymentsData = {
-    labels: partnerData.paymentsReceived.map((payment) => payment.date),
+    labels: (partnerData.paymentsReceived || []).map((payment) => payment.date || "N/A"),
     datasets: [
       {
         label: "Payments",
-        data: partnerData.paymentsReceived.map((payment) => payment.amount),
+        data: (partnerData.paymentsReceived || []).map((payment) => payment.amount || 0),
         borderColor: "#10b981",
         backgroundColor: "rgba(16, 185, 129, 0.2)",
         fill: true,
@@ -76,11 +104,11 @@ const PartnerDashboard = () => {
   };
 
   const accountsData = {
-    labels: partnerData.newAccounts.map((account) => account.date),
+    labels: (partnerData.newAccounts || []).map((account) => account.date || "N/A"),
     datasets: [
       {
         label: "New Accounts",
-        data: partnerData.newAccounts.map((account) => account.count),
+        data: (partnerData.newAccounts || []).map((account) => account.count || 0),
         borderColor: "#3b82f6",
         backgroundColor: "rgba(59, 130, 246, 0.2)",
         fill: true,
@@ -112,10 +140,13 @@ const PartnerDashboard = () => {
             <div className="bg-white p-6 rounded-lg border-2 border-teal-50 hover:border-green-500 transition">
               <h3 className="text-lg font-bold text-teal-700">Top Houses by Spend</h3>
               <ul className="mt-4 space-y-2">
-                {partnerData.topHousesBySpend.map((house, index) => (
-                  <li key={index} className="flex justify-between text-gray-800 font-medium">
-                    <span>{house.houseName}</span>
-                    <span>{house.spend}</span>
+                {(partnerData.topHousesBySpend || []).map((house, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between text-gray-800 font-medium"
+                  >
+                    <span>{house.houseName || "Unknown House"}</span>
+                    <span>{house.spend || 0}</span>
                   </li>
                 ))}
               </ul>
@@ -123,10 +154,13 @@ const PartnerDashboard = () => {
             <div className="bg-white p-6 rounded-lg border-2 border-teal-50 hover:border-green-500 transition">
               <h3 className="text-lg font-bold text-teal-700">Recent Payments</h3>
               <ul className="mt-4 space-y-2">
-                {partnerData.recentPayments.map((payment) => (
-                  <li key={payment.id} className="flex justify-between text-gray-800 font-medium">
-                    <span>{payment.houseName}</span>
-                    <span>{payment.amount}</span>
+                {(partnerData.recentPayments || []).map((payment) => (
+                  <li
+                    key={payment.id}
+                    className="flex justify-between text-gray-800 font-medium"
+                  >
+                    <span>{payment.houseName || "Unknown House"}</span>
+                    <span>{payment.amount || 0}</span>
                   </li>
                 ))}
               </ul>

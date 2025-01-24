@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
-const YourDetails = () => {
+const YourDetails = ({ partner }) => {
   return (
     <div className="p-6 bg-white rounded shadow">
       <h2 className="text-lg font-bold text-teal-700 mb-4">Your Details</h2>
       <p className="text-gray-800">Here you can view and update your account details.</p>
       <ul className="space-y-2 mt-4 text-gray-600">
         <li>
-          <strong>Name:</strong> John Doe
+          <strong>Name:</strong> {partner?.person_of_contact || "N/A"}
         </li>
         <li>
-          <strong>Email:</strong> john.doe@example.com
+          <strong>Email:</strong> {partner?.email || "N/A"}
         </li>
         <li>
-          <strong>Phone:</strong> +1 (123) 456-7890
+          <strong>Phone:</strong> {partner?.phone_number || "N/A"}
         </li>
       </ul>
       <button className="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
@@ -46,22 +47,61 @@ const Contact = () => {
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("Your Details");
+  const [partner, setPartner] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchPartner = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) throw new Error("No auth token found. Please log in.");
+
+        const response = await axios.get("http://localhost:3004/api/partners/current", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setPartner(response.data.partner);
+      } catch (err) {
+        console.error("Error fetching partner details:", err);
+        setError("Failed to load partner details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPartner();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
       case "Your Details":
-        return <YourDetails />;
+        return <YourDetails partner={partner} />;
       case "Contact":
         return <Contact />;
       default:
-        return <YourDetails />;
+        return <YourDetails partner={partner} />;
     }
   };
+
+  if (loading) {
+    return <div className="p-6 text-center text-gray-600">Loading partner details...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-center text-red-600">
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex">
       {/* Sidebar */}
-      <Sidebar active="Settings" partnerName="Sample Partner" />
+      <Sidebar active="Settings" partnerName={partner?.name || "Partner"} />
 
       {/* Main Content */}
       <div className="flex-grow p-8 bg-teal-50 min-h-screen">

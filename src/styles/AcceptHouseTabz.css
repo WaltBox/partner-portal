@@ -1,0 +1,47 @@
+/* General styling */
+body {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  /* Component container */
+  .bg-gradient-to-r {
+    background: linear-gradient(to right, #ebf8ff, #e6fffa);
+  }
+  
+  /* Buttons */
+  .btn {
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .btn:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Icon styling */
+  .bg-teal-100 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+/* AcceptHouseTabz.css */
+
+/* AcceptHouseTabz.css */
+
+.scroll-section {
+    opacity: 0;
+    transform: translateY(10%);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  
+  .opacity-100 {
+    opacity: 1;
+  }
+  
+  .translate-y-0 {
+    transform: translateY(0%);
+  }
+  
+  
