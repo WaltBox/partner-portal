@@ -4,43 +4,60 @@ import Sidebar from "../components/Sidebar";
 
 const YourDetails = ({ partner }) => {
   return (
-    <div className="p-6 bg-white rounded shadow">
+    <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-lg font-bold text-teal-700 mb-4">Your Details</h2>
-      <p className="text-gray-800">Here you can view and update your account details.</p>
-      <ul className="space-y-2 mt-4 text-gray-600">
-        <li>
-          <strong>Name:</strong> {partner?.person_of_contact || "N/A"}
-        </li>
-        <li>
-          <strong>Email:</strong> {partner?.email || "N/A"}
-        </li>
-        <li>
-          <strong>Phone:</strong> {partner?.phone_number || "N/A"}
-        </li>
-      </ul>
-      <button className="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
-        Edit Details
-      </button>
+      <p className="text-gray-600 mb-6">Here you can view and update your account details.</p>
+      
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm text-gray-500">Name</label>
+            <p className="font-medium text-gray-800">{partner?.person_of_contact || "N/A"}</p>
+          </div>
+          <div>
+            <label className="text-sm text-gray-500">Email</label>
+            <p className="font-medium text-gray-800">{partner?.email || "N/A"}</p>
+          </div>
+          <div>
+            <label className="text-sm text-gray-500">Phone</label>
+            <p className="font-medium text-gray-800">{partner?.phone_number || "N/A"}</p>
+          </div>
+        </div>
+
+        <button className="mt-6 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+          Edit Details
+        </button>
+      </div>
     </div>
   );
 };
 
 const Contact = () => {
   return (
-    <div className="p-6 bg-white rounded shadow">
+    <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-lg font-bold text-teal-700 mb-4">Contact Us</h2>
-      <p className="text-gray-800">Reach out to us using the information below:</p>
-      <ul className="space-y-2 mt-4 text-gray-600">
-        <li>
-          <strong>Email:</strong> support@housetabz.com
-        </li>
-        <li>
-          <strong>Phone:</strong> +1 (800) 123-4567
-        </li>
-        <li>
-          <strong>Address:</strong> 123 HouseTabz Lane, Suite 100, Fintech City, USA
-        </li>
-      </ul>
+      <p className="text-gray-600 mb-6">Reach out to us using the information below:</p>
+      
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-500">Email:</span>
+          <a href="mailto:support@housetabz.com" className="text-teal-600 hover:text-teal-700">
+            support@housetabz.com
+          </a>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-500">Phone:</span>
+          <a href="tel:+18001234567" className="text-teal-600 hover:text-teal-700">
+            +1 (800) 123-4567
+          </a>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-500">Address:</span>
+          <span className="text-gray-800">
+            123 HouseTabz Lane, Suite 100, Fintech City, USA
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -87,45 +104,55 @@ const Settings = () => {
   };
 
   if (loading) {
-    return <div className="p-6 text-center text-gray-600">Loading partner details...</div>;
-  }
-
-  if (error) {
     return (
-      <div className="p-6 text-center text-red-600">
-        <p>{error}</p>
+      <div className="ml-64 min-h-screen bg-teal-50 p-8">
+        <div className="text-center">Loading partner details...</div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="ml-64 min-h-screen bg-teal-50 p-8">
+        <div className="text-center text-red-600">{error}</div>
+      </div>
+    );
+  }
+
+  const tabs = ["Your Details", "Contact"];
+
   return (
-    <div className="flex">
-      {/* Sidebar */}
+    <div className="flex min-h-screen">
       <Sidebar active="Settings" partnerName={partner?.name || "Partner"} />
-
+      
       {/* Main Content */}
-      <div className="flex-grow p-8 bg-teal-50 min-h-screen">
-        <h1 className="text-2xl font-bold text-teal-700 mb-6">Settings</h1>
+      <div className="flex-grow ml-64">
+        {/* Fixed Header */}
+        <div className="bg-teal-50 p-8 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-teal-700">Settings</h1>
 
-        {/* Tab Navigation */}
-        <div className="flex space-x-6 border-b-2 border-gray-300 mb-8">
-          {["Your Details", "Contact"].map((tab) => (
-            <button
-              key={tab}
-              className={`pb-2 ${
-                activeTab === tab
-                  ? "text-teal-700 border-b-4 border-teal-700 font-bold"
-                  : "text-gray-600"
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+          {/* Tab Navigation */}
+          <div className="flex space-x-6 mt-6">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                className={`pb-2 px-1 transition-colors ${
+                  activeTab === tab
+                    ? "text-teal-700 border-b-2 border-teal-700 font-semibold"
+                    : "text-gray-600 hover:text-teal-600"
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Dynamic Content */}
-        {renderContent()}
+        {/* Scrollable Content */}
+        <div className="bg-teal-50 p-8">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ const Sidebar = ({ active, partnerName }) => {
   
 
   return (
-    <div className="w-64 h-screen bg-teal-50 text-gray-700 flex flex-col">
+    <div className="w-64 h-screen bg-teal-50 text-gray-700 flex flex-col fixed left-0 top-0">
       <div className="p-6 text-xl font-bold border-b border-gray-300">
         {partnerName || "Partner Portal"}
       </div>
