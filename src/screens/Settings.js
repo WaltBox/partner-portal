@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-
+import MarketplaceSettings from "../components/MarketplaceSettings";
 const YourDetails = ({ partner }) => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -96,6 +96,8 @@ const Settings = () => {
     switch (activeTab) {
       case "Your Details":
         return <YourDetails partner={partner} />;
+      case "Marketplace Presence":  // Changed from "Marketplace Presence"
+        return <MarketplaceSettings partner={partner} />;
       case "Contact":
         return <Contact />;
       default:
@@ -119,7 +121,7 @@ const Settings = () => {
     );
   }
 
-  const tabs = ["Your Details", "Contact"];
+  const tabs = ["Your Details", "Contact", "Marketplace Presence"];
 
   return (
     <div className="flex min-h-screen">

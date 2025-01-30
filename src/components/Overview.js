@@ -134,43 +134,164 @@ const NavItem = ({ item, isActive, onClick, depth = 0 }) => {
 // Main component
 const IntegrationMenu = () => {
   const [activeSection, setActiveSection] = useState('introduction');
+
+  const [activeTab, setActiveTab] = useState('one-time');
   
   const documentation = {
     introduction: {
       title: "Getting Started with HouseTabz",
       content: (
         <div className="space-y-6">
-          <p className="text-lg">
-            HouseTabz helps your users split their service costs with roommates. When users connect through HouseTabz:
-          </p>
+         <p className="text-lg">
+    HouseTabz is an additional payment authorization option that works alongside your existing payment methods. 
+    Choose the integration type that matches your service:
+  </p>
+
+  {/* Integration Type Tabs */}
+  <div className="mt-8">
+    <div className="border-b border-gray-200">
+      <nav className="-mb-px flex space-x-8">
+        <button
+          onClick={() => setActiveTab('one-time')}
+          className={`${
+            activeTab === 'one-time'
+              ? 'border-teal-500 text-teal-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
+        >
+          One-time Payments
+        </button>
+        <button
+          onClick={() => setActiveTab('recurring')}
+          className={`${
+            activeTab === 'recurring'
+              ? 'border-teal-500 text-teal-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
+        >
+          Recurring Expenses
+        </button>
+      </nav>
+    </div>
+
+    {/* Tab Content */}
+    <div className="mt-6">
+      {activeTab === 'one-time' ? (
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Pay with HouseTabz</h3>
+          <p className="text-gray-600">Split single payments among roommates.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-bold mb-2">1. Connect</h3>
-              <p>Users click "Connect to HouseTabz" at your checkout</p>
+              <h4 className="font-bold mb-2">1. Add Payment Option</h4>
+              <p>Display "Pay with HouseTabz" at checkout</p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-bold mb-2">2. Approve</h3>
-              <p>Roommates approve the connection in their HouseTabz app</p>
+              <h4 className="font-bold mb-2">2. Split Payment</h4>
+              <p>Roommates approve their portions</p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-bold mb-2">3. Activate</h3>
-              <p>We notify you when approved, and you activate the service</p>
+              <h4 className="font-bold mb-2">3. Complete Service</h4>
+              <p>Proceed with service/delivery</p>
             </div>
           </div>
-  
+
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-bold mb-2">Integration Overview</h3>
-            <p>You'll need to:</p>
-            <ul className="list-disc ml-6">
-              <li>Add our button to your checkout</li>
-              <li>Set up a webhook endpoint to receive approvals</li>
-              <li>Activate services when approved</li>
+            <p className="font-medium">Perfect for:</p>
+            <ul className="list-disc ml-6 mt-2">
+              <li>Cleaning services</li>
+              <li>Maintenance fees</li>
+              <li>One-time purchases</li>
             </ul>
           </div>
         </div>
+      ) : (
+        <div className="space-y-4">
+        <div className="bg-[#E7FAE7] bg-opacity-50 rounded-xl p-6 border border-[#4ADE80] border-opacity-20">
+          <h3 className="text-xl font-bold text-gray-800">Connect to HouseTabz</h3>
+          <p className="text-gray-600 mt-2">Let roommates automatically split their recurring bills.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div className="bg-white rounded-lg p-5 shadow-sm border border-[#4ADE80] border-opacity-20">
+              <div className="flex items-center mb-3">
+                <div className="w-8 h-8 bg-[#4ADE80] bg-opacity-10 rounded-full flex items-center justify-center text-[#4ADE80] font-medium">1</div>
+                <h4 className="font-bold ml-3">Customer Links Account</h4>
+              </div>
+              <p className="text-gray-600">Customer connects their account through HouseTabz - you'll receive their houseId</p>
+            </div>
+            <div className="bg-white rounded-lg p-5 shadow-sm border border-[#4ADE80] border-opacity-20">
+              <div className="flex items-center mb-3">
+                <div className="w-8 h-8 bg-[#4ADE80] bg-opacity-10 rounded-full flex items-center justify-center text-[#4ADE80] font-medium">2</div>
+                <h4 className="font-bold ml-3">Store HouseTabz ID</h4>
+              </div>
+              <p className="text-gray-600">Add a houseId field to your accounts to identify HouseTabz customers</p>
+            </div>
+            <div className="bg-white rounded-lg p-5 shadow-sm border border-[#4ADE80] border-opacity-20">
+              <div className="flex items-center mb-3">
+                <div className="w-8 h-8 bg-[#4ADE80] bg-opacity-10 rounded-full flex items-center justify-center text-[#4ADE80] font-medium">3</div>
+                <h4 className="font-bold ml-3">Auto-split Bills</h4>
+              </div>
+              <p className="text-gray-600">Notify HouseTabz of new bills - we handle the splitting and collection</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 p-6 rounded-lg mt-6">
+          <h4 className="font-bold mb-3">Simple Implementation</h4>
+          <div className="space-y-2">
+            <p>1. Check if account is HouseTabz-enabled:</p>
+            <pre className="bg-gray-100 p-3 rounded text-sm">
+              {`const isHouseTabz = account.housetabzId !== null;`}
+            </pre>
+            
+            <p>2. If yes, send bill details to our webhook:</p>
+            <pre className="bg-gray-100 p-3 rounded text-sm">
+              {`await fetch('https://api.housetabz.com/v1/bills', {
+method: 'POST',
+headers: {
+  'Authorization': 'Bearer YOUR_SECRET_KEY',
+  'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+  houseId: account.housetabzId,
+  billAmount: amount,
+  dueDate: dueDate,
+  description: 'Monthly Service Bill'
+})
+});`}
+            </pre>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <p className="font-medium">Perfect for:</p>
+          <ul className="list-disc ml-6 mt-2">
+            <li>Energy providers</li>
+            <li>Internet services</li>
+            <li>Monthly subscriptions</li>
+            <li>Any recurring service</li>
+          </ul>
+        </div>
+
+        <div className="bg-green-50 p-4 rounded-lg mt-4">
+          <h4 className="font-bold mb-2">Benefits</h4>
+          <ul className="list-disc ml-6 space-y-1">
+            <li>Minimal integration required - just one API call</li>
+            <li>No changes needed to your existing billing system</li>
+            <li>Guaranteed full payment for every bill</li>
+            <li>Automatic reconciliation and reporting</li>
+          </ul>
+        </div>
+      </div>
+      )}
+    </div>
+  </div>
+</div>
+   
       )
     },
+
+
     
     apiKeys: {
       title: "API Keys",
@@ -219,80 +340,210 @@ const IntegrationMenu = () => {
     },
   
     button: {
-      title: "Adding the HouseTabz Button",
+      title: "Integrating HouseTabz into Your Checkout",
       content: (
         <div className="space-y-6">
-          <p>The HouseTabz button appears automatically when users come from the HouseTabz app.</p>
-  
-          <FrameworkTabs
-            examples={[
-              {
-                name: "HTML",
-                code: 
-  `<!-- Add the HouseTabz SDK -->
-  <script src="https://js.housetabz.com/v1/housetabz.min.js"></script>
-  
-  <!-- Add the button container -->
-  <div id="housetabz-button"></div>
-  
-  <script>
-    HouseTabz.init({
-      publicKey: 'YOUR_PUBLIC_KEY'
-    });
-  
-    HouseTabz.mount('#housetabz-button', {
-      serviceName: 'Energy Plan',
-      pricing: 99.99,
-      transactionId: 'YOUR-INTERNAL-ID'
-    });
-  </script>`
-              },
-              {
-                name: "React",
-                code:
-  `import { HouseTabzButton } from '@housetabz/react';
-  
-  function Checkout() {
-    return (
-      <HouseTabzButton
-        publicKey={process.env.REACT_APP_HOUSETABZ_PUBLIC_KEY}
-        serviceName="Energy Plan"
-        pricing={99.99}
-        transactionId="YOUR-INTERNAL-ID"
-        onSuccess={(result) => {
-          console.log('Connection initiated:', result);
-        }}
-      />
-    );
-  }`
-              }
-            ]}
-          />
-  
+          <div className="bg-blue-50 p-6 rounded-lg">
+            <h3 className="font-bold mb-3">How It Works</h3>
+            <ol className="list-decimal ml-6 space-y-2">
+              <li>Users discover your service on the HouseTabz marketplace</li>
+              <li>When they click "Shop Partner", they're directed to your site with HouseTabz parameters</li>
+              <li>Your site stores these parameters while they shop normally</li>
+              <li>At checkout, your site displays the HouseTabz payment option</li>
+            </ol>
+          </div>
+    
           <div className="bg-gray-50 p-6 rounded-lg">
-            <h3 className="font-bold mb-3">Button Options</h3>
-            <div className="space-y-3">
+            <h3 className="font-bold mb-3">Step 1: Store HouseTabz Parameters</h3>
+            <p className="mb-4">Add this code to your main site layout to preserve the HouseTabz context:</p>
+            <FrameworkTabs
+              examples={[
+                {
+                  name: "JavaScript",
+                  code: `
+    // Add to your site's main layout or entry point
+    window.addEventListener('load', () => {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Store HouseTabz parameters if present
+        if (params.get('ref') === 'housetabz') {
+            sessionStorage.setItem('housetabz_user_id', params.get('user_id'));
+            sessionStorage.setItem('housetabz_partner_id', params.get('partner_id'));
+            sessionStorage.setItem('housetabz_ref', 'housetabz');
+        }
+    });`
+                }
+              ]}
+            />
+          </div>
+    
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="font-bold mb-3">Step 2: Add HouseTabz to Checkout</h3>
+            <p className="mb-4">On your checkout page, initialize the HouseTabz button:</p>
+            <FrameworkTabs
+              examples={[
+                {
+                  name: "HTML",
+                  code: `
+    <!-- Add the HouseTabz SDK -->
+    <script src="dist/housetabz.min.js"></script>
+    
+    <!-- Add among your payment options -->
+    <div id="housetabz-button"></div>
+    
+    <script>
+      window.addEventListener('load', async () => {
+        // Check if user came from HouseTabz
+        const isHouseTabzUser = sessionStorage.getItem('housetabz_ref') === 'housetabz';
+        
+        if (isHouseTabzUser && window.HouseTabz) {
+          try {
+            await window.HouseTabz.init({
+              apiKey: 'YOUR_API_KEY',
+              secretKey: 'YOUR_SECRET_KEY',
+              environment: 'development'
+            });
+    
+            await window.HouseTabz.mount('#housetabz-button', {
+              serviceName: 'Your Service Name',
+              pricing: 99.99,
+              transactionId: 'YOUR-ORDER-ID',
+              onSuccess: (data) => {
+                console.log('HouseTabz payment initiated:', data);
+                // Handle successful HouseTabz connection
+              },
+              onError: (error) => {
+                console.error('HouseTabz error:', error);
+                // Handle any errors
+              }
+            });
+          } catch (error) {
+            console.error('HouseTabz initialization failed:', error);
+          }
+        }
+      });
+    </script>`
+                },
+                {
+                  name: "React",
+                  code: `
+    import { useEffect } from 'react';
+    
+    function CheckoutPage() {
+      useEffect(() => {
+        const initHouseTabz = async () => {
+          // Check if user came from HouseTabz
+          const isHouseTabzUser = sessionStorage.getItem('housetabz_ref') === 'housetabz';
+          
+          if (!isHouseTabzUser || !window.HouseTabz) {
+            return;
+          }
+    
+          try {
+            await window.HouseTabz.init({
+              apiKey: process.env.REACT_APP_HOUSETABZ_API_KEY,
+              secretKey: process.env.REACT_APP_HOUSETABZ_SECRET_KEY,
+              environment: 'development'
+            });
+    
+            await window.HouseTabz.mount('#housetabz-button', {
+              serviceName: 'Your Service Name',
+              pricing: 99.99,
+              transactionId: orderId, // Your order ID
+              onSuccess: (data) => {
+                console.log('HouseTabz payment initiated:', data);
+                // Handle successful HouseTabz connection
+              },
+              onError: (error) => {
+                console.error('HouseTabz error:', error);
+                // Handle any errors
+              }
+            });
+          } catch (error) {
+            console.error('HouseTabz initialization failed:', error);
+          }
+        };
+    
+        initHouseTabz();
+      }, []);
+    
+      return (
+        <div className="checkout-page">
+          {/* Your other payment options */}
+          <div id="housetabz-button" />
+        </div>
+      );
+    }`
+                }
+              ]}
+            />
+          </div>
+    
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="font-bold mb-3">Configuration Options</h3>
+            <div className="space-y-4">
+              <h4 className="font-semibold">Initialization Options</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div className="font-medium">Option</div>
                 <div className="font-medium">Type</div>
                 <div className="font-medium">Description</div>
               </div>
               <div className="grid grid-cols-3 gap-4">
+                <code>apiKey</code>
+                <div>string</div>
+                <div>Your HouseTabz API key</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <code>secretKey</code>
+                <div>string</div>
+                <div>Your HouseTabz secret key</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <code>environment</code>
+                <div>string</div>
+                <div>'development' or 'production'</div>
+              </div>
+            </div>
+    
+            <div className="space-y-4 mt-6">
+              <h4 className="font-semibold">Button Options</h4>
+              <div className="grid grid-cols-3 gap-4">
                 <code>serviceName</code>
                 <div>string</div>
-                <div>Name of your service</div>
+                <div>Name of your service shown to users</div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <code>pricing</code>
                 <div>number</div>
-                <div>Monthly cost of service</div>
+                <div>Monthly service cost</div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <code>transactionId</code>
                 <div>string</div>
-                <div>Your internal order/transaction ID</div>
+                <div>Your order/transaction identifier</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <code>onSuccess</code>
+                <div>function</div>
+                <div>Called when HouseTabz connection is initiated</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <code>onError</code>
+                <div>function</div>
+                <div>Called if connection fails</div>
               </div>
             </div>
+          </div>
+    
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h3 className="font-bold mb-2">Implementation Tips</h3>
+            <ul className="list-disc ml-6 space-y-2">
+              <li>The HouseTabz button only shows for users coming from the HouseTabz marketplace</li>
+              <li>Store the HouseTabz parameters in sessionStorage to maintain context during shopping</li>
+              <li>Handle both success and error cases in your callbacks</li>
+              <li>Test thoroughly in development before going live</li>
+              <li>Make sure your API credentials match your environment</li>
+            </ul>
           </div>
         </div>
       )
@@ -303,111 +554,135 @@ const IntegrationMenu = () => {
       content: (
         <div className="space-y-6">
           <p>
-            When roommates approve a connection, we'll send a webhook to your server. 
-            Here's how to handle these notifications:
+            HouseTabz acts as a payment authorization method in your checkout flow. When all roommates approve a payment split, 
+            we'll send a webhook notification to your server indicating the payment is authorized and ready for service activation.
           </p>
-  
+    
+          <div className="bg-blue-50 p-4 rounded-lg mb-6">
+            <h3 className="font-bold mb-2">How It Works</h3>
+            <p>
+              When a <code>request.authorized</code> webhook is received, it indicates that:
+            </p>
+            <ul className="list-disc ml-6 mt-2 space-y-2">
+              <li>All roommates have approved their portion of the payment</li>
+              <li>The full payment amount is authorized and guaranteed</li>
+              <li>You can proceed with service activation for the customer</li>
+            </ul>
+          </div>
+    
           <FrameworkTabs
             examples={[
               {
                 name: "Node/Express",
                 code:
-  `const express = require('express');
-  const app = express();
-  
-  app.post('/housetabz/webhook', express.json(), (req, res) => {
-    const signature = req.headers['x-housetabz-signature'];
-    const webhookSecret = process.env.HOUSETABZ_WEBHOOK_SECRET;
-  
-    // Verify webhook signature
-    if (isValidSignature(req.body, signature, webhookSecret)) {
-      const { event, transactionId } = req.body;
-  
-      if (event === 'request.authorized') {
-        // All roommates approved! Activate the service
-        await activateService(transactionId);
+    `const express = require('express');
+    const app = express();
+    
+    app.post('/housetabz/webhook', express.json(), (req, res) => {
+      const signature = req.headers['x-housetabz-signature'];
+      const webhookSecret = process.env.HOUSETABZ_WEBHOOK_SECRET;
+    
+      // Verify webhook signature
+      if (isValidSignature(req.body, signature, webhookSecret)) {
+        const { event, transactionId, pricing, serviceName } = req.body;
+    
+        if (event === 'request.authorized') {
+          // Payment is authorized - activate the service
+          await activateService({
+            transactionId,
+            amount: pricing,
+            service: serviceName
+          });
+        }
       }
-    }
-  
-    res.json({ received: true });
-  });
-  
-  // Verify webhook signature
-  function isValidSignature(payload, signature, secret) {
-    const hmac = crypto.createHmac('sha256', secret);
-    const digest = hmac.update(JSON.stringify(payload)).digest('hex');
-    return signature === digest;
-  }`
+    
+      res.json({ received: true });
+    });
+    
+    // Verify webhook signature
+    function isValidSignature(payload, signature, secret) {
+      const hmac = crypto.createHmac('sha256', secret);
+      const digest = hmac.update(JSON.stringify(payload)).digest('hex');
+      return signature === digest;
+    }`
               },
               {
                 name: "Ruby/Rails",
                 code:
-  `# app/controllers/webhooks_controller.rb
-  class WebhooksController < ApplicationController
-    skip_before_action :verify_authenticity_token
-  
-    def receive
-      signature = request.headers['X-HouseTabz-Signature']
-      payload = request.raw_post
-      
-      if valid_signature?(payload, signature)
-        case params[:event]
-        when 'request.authorized'
-          # All roommates approved! Activate the service
-          activate_service(params[:transactionId])
+    `# app/controllers/webhooks_controller.rb
+    class WebhooksController < ApplicationController
+      skip_before_action :verify_authenticity_token
+    
+      def receive
+        signature = request.headers['X-HouseTabz-Signature']
+        payload = request.raw_post
+        
+        if valid_signature?(payload, signature)
+          case params[:event]
+          when 'request.authorized'
+            # Payment is authorized - activate the service
+            activate_service(
+              transaction_id: params[:transactionId],
+              amount: params[:pricing],
+              service: params[:serviceName]
+            )
+          end
         end
+        
+        render json: { received: true }
       end
-      
-      render json: { received: true }
-    end
-  
-    private
-  
-    def valid_signature?(payload, signature)
-      digest = OpenSSL::HMAC.hexdigest(
-        'SHA256',
-        ENV['HOUSETABZ_WEBHOOK_SECRET'],
-        payload
-      )
-      ActiveSupport::SecurityUtils.secure_compare(digest, signature)
-    end
-  end`
+    
+      private
+    
+      def valid_signature?(payload, signature)
+        digest = OpenSSL::HMAC.hexdigest(
+          'SHA256',
+          ENV['HOUSETABZ_WEBHOOK_SECRET'],
+          payload
+        )
+        ActiveSupport::SecurityUtils.secure_compare(digest, signature)
+      end
+    end`
               },
               {
                 name: "PHP/Laravel",
                 code:
-  `// routes/web.php
-  Route::post('/housetabz/webhook', 'WebhookController@handle');
-  
-  // app/Http/Controllers/WebhookController.php
-  public function handle(Request $request)
-  {
-      $signature = $request->header('X-HouseTabz-Signature');
-      $payload = $request->getContent();
-      
-      if ($this->validSignature($payload, $signature)) {
-          if ($request->event === 'request.authorized') {
-              // All roommates approved! Activate the service
-              $this->activateService($request->transactionId);
-          }
-      }
-      
-      return response()->json(['received' => true]);
-  }
-  
-  private function validSignature($payload, $signature)
-  {
-      $computed = hash_hmac(
-          'sha256',
-          $payload,
-          config('services.housetabz.webhook_secret')
-      );
-      return hash_equals($computed, $signature);
-  }`
+    `// routes/web.php
+    Route::post('/housetabz/webhook', 'WebhookController@handle');
+    
+    // app/Http/Controllers/WebhookController.php
+    public function handle(Request $request)
+    {
+        $signature = $request->header('X-HouseTabz-Signature');
+        $payload = $request->getContent();
+        
+        if ($this->validSignature($payload, $signature)) {
+            if ($request->event === 'request.authorized') {
+                // Payment is authorized - activate the service
+                $this->activateService([
+                    'transactionId' => $request->transactionId,
+                    'amount' => $request->pricing,
+                    'service' => $request->serviceName
+                ]);
+            }
+        }
+        
+        return response()->json(['received' => true]);
+    }
+    
+    private function validSignature($payload, $signature)
+    {
+        $computed = hash_hmac(
+            'sha256',
+            $payload,
+            config('services.housetabz.webhook_secret')
+        );
+        return hash_equals($computed, $signature);
+    }`
               }
             ]}
           />
-  
+    
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="font-bold mb-3">Webhook Events</h3>
             <div className="space-y-4">
@@ -417,20 +692,52 @@ const IntegrationMenu = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <code>request.authorized</code>
-                <div>All roommates have approved the connection</div>
+                <div>
+                  All roommates have approved and payment is authorized. 
+                  Proceed with service activation.
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <code>request.declined</code>
-                <div>A roommate has declined the connection</div>
+                <div>
+                  Payment declined due to roommate rejection. 
+                  No further action needed.
+                </div>
               </div>
             </div>
           </div>
-  
+    
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="font-bold mb-3">Webhook Payload</h3>
+            <p className="mb-4">Each webhook event includes the following data:</p>
+            <pre className="bg-gray-100 p-4 rounded">
+    {`{
+      "event": "request.authorized",
+      "transactionId": "HT-123456",
+      "status": "authorized",
+      "serviceName": "Energy Plan",
+      "pricing": 99.99,
+      "customer_id": "user_123"
+    }`}
+            </pre>
+          </div>
+    
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="font-bold mb-3">Security</h3>
+            <p className="mb-4">Every webhook request includes a signature header for verification:</p>
+            <ul className="list-disc ml-6 space-y-2">
+              <li>Header name: <code>X-HouseTabz-Signature</code></li>
+              <li>Sign requests using your webhook secret (found in dashboard)</li>
+              <li>Always verify the signature before processing events</li>
+            </ul>
+          </div>
+    
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-bold mb-2">Testing Webhooks</h3>
+            <h3 className="font-bold mb-2">Testing</h3>
             <p>
-              Use tools like webhook.site to test your webhook endpoint before going live.
-              We'll send test events to help you verify your implementation.
+              Use webhook.site to test your endpoint implementation. Copy your test endpoint URL 
+              to your HouseTabz dashboard settings to receive test events. We recommend testing 
+              both successful authorization and decline scenarios before going live.
             </p>
           </div>
         </div>
