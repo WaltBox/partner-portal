@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom'; // Import useLocation for query parameters
 import Navbar from '../components/Navbar';
-import AcceptHouseTabz from '../segments/AcceptHouseTabz';
+// import AcceptHouseTabz from '../segments/AcceptHouseTabz';
 import '../styles/landing.css';
 
 const LandingPage = () => {
@@ -41,7 +41,7 @@ const LandingPage = () => {
       </section>
 
 
-      <AcceptHouseTabz />
+      {/* <AcceptHouseTabz /> */}
       
     </div>
   );
