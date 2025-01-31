@@ -1,66 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Sidebar from "../components/Sidebar";
+import YourDetails from "../components/YourDetails";
+import Contact from "../components/Contact";
 import MarketplaceSettings from "../components/MarketplaceSettings";
-const YourDetails = ({ partner }) => {
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-bold text-teal-700 mb-4">Your Details</h2>
-      <p className="text-gray-600 mb-6">Here you can view and update your account details.</p>
-      
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm text-gray-500">Name</label>
-            <p className="font-medium text-gray-800">{partner?.person_of_contact || "N/A"}</p>
-          </div>
-          <div>
-            <label className="text-sm text-gray-500">Email</label>
-            <p className="font-medium text-gray-800">{partner?.email || "N/A"}</p>
-          </div>
-          <div>
-            <label className="text-sm text-gray-500">Phone</label>
-            <p className="font-medium text-gray-800">{partner?.phone_number || "N/A"}</p>
-          </div>
-        </div>
-
-        <button className="mt-6 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
-          Edit Details
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Contact = () => {
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-bold text-teal-700 mb-4">Contact Us</h2>
-      <p className="text-gray-600 mb-6">Reach out to us using the information below:</p>
-      
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-500">Email:</span>
-          <a href="mailto:support@housetabz.com" className="text-teal-600 hover:text-teal-700">
-            support@housetabz.com
-          </a>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-500">Phone:</span>
-          <a href="tel:+18001234567" className="text-teal-600 hover:text-teal-700">
-            +1 (800) 123-4567
-          </a>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-500">Address:</span>
-          <span className="text-gray-800">
-            123 HouseTabz Lane, Suite 100, Fintech City, USA
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("Your Details");
@@ -81,10 +24,10 @@ const Settings = () => {
         });
 
         setPartner(response.data.partner);
+        setLoading(false);
       } catch (err) {
         console.error("Error fetching partner details:", err);
         setError("Failed to load partner details.");
-      } finally {
         setLoading(false);
       }
     };
@@ -96,7 +39,7 @@ const Settings = () => {
     switch (activeTab) {
       case "Your Details":
         return <YourDetails partner={partner} />;
-      case "Marketplace Presence":  // Changed from "Marketplace Presence"
+      case "Marketplace Presence":
         return <MarketplaceSettings partner={partner} />;
       case "Contact":
         return <Contact />;
@@ -107,16 +50,27 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className="ml-64 min-h-screen bg-teal-50 p-8">
-        <div className="text-center">Loading partner details...</div>
+      <div className="ml-64">
+        <div className="text-center mt-20">Loading settings...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="ml-64 min-h-screen bg-teal-50 p-8">
-        <div className="text-center text-red-600">{error}</div>
+      <div className="ml-64">
+        <div className="text-center mt-20">
+          <p className="text-red-500">{error}</p>
+          <button
+            className="mt-4 px-4 py-2 bg-teal-500 text-white rounded"
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              window.location.href = "/login";
+            }}
+          >
+            Log In Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -127,13 +81,11 @@ const Settings = () => {
     <div className="flex min-h-screen">
       <Sidebar active="Settings" partnerName={partner?.name || "Partner"} />
       
-      {/* Main Content */}
+      {/* Main content area */}
       <div className="flex-grow ml-64">
-        {/* Fixed Header */}
-        <div className="bg-teal-50 p-8 border-b border-gray-200">
+        {/* Fixed header - now using fixed instead of flex */}
+        <div className="fixed top-0 right-0 left-64 bg-teal-50 p-8 border-b border-gray-200 z-10">
           <h1 className="text-2xl font-bold text-teal-700">Settings</h1>
-
-          {/* Tab Navigation */}
           <div className="flex space-x-6 mt-6">
             {tabs.map((tab) => (
               <button
@@ -151,9 +103,11 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="bg-teal-50 p-8">
-          {renderContent()}
+        {/* Scrollable content - with padding-top to account for fixed header */}
+        <div className="bg-teal-50 min-h-screen pt-[132px]"> {/* Adjust pt value based on your header height */}
+          <div className="p-8">
+            {renderContent()}
+          </div>
         </div>
       </div>
     </div>

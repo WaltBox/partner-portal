@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { FaBell, FaKey, FaCheck, FaEye, FaEyeSlash, FaCopy, FaCode, FaExclamationCircle } from 'react-icons/fa';
 
-// Card component for sections
+// Constants
+const API_BASE_URL = 'http://localhost:3004/api';
+const AUTH_TOKEN = localStorage.getItem('authToken');
+
+// Reusable SectionCard Component
 const SectionCard = ({ title, description, children, icon: Icon }) => (
   <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
     <div className="px-6 py-4 border-b border-gray-200 flex items-center">
@@ -16,6 +20,64 @@ const SectionCard = ({ title, description, children, icon: Icon }) => (
   </div>
 );
 
+// Reusable WebhookSecret Component
+const WebhookSecret = ({ secret, showSecret, onToggleVisibility, onCopy, copiedSecret }) => (
+  <div className="space-y-4">
+    <div className="flex items-center gap-4">
+      <div className="flex-grow px-4 py-2 bg-gray-50 border rounded-lg font-mono text-sm">
+        {showSecret ? secret : '•'.repeat(32)}
+      </div>
+      <button
+        onClick={onToggleVisibility}
+        className="p-2 text-gray-600 hover:text-teal-600 transition-colors"
+        aria-label={showSecret ? "Hide Secret" : "Show Secret"}
+      >
+        {showSecret ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+      </button>
+      <button
+        onClick={onCopy}
+        className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:border-teal-600 hover:text-teal-600 transition-colors"
+        aria-label="Copy Secret"
+      >
+        {copiedSecret ? <FaCheck className="mr-2" /> : <FaCopy className="mr-2" />}
+        {copiedSecret ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+    <p className="text-sm text-gray-600">
+      Use this secret to verify that webhook events came from HouseTabz
+    </p>
+  </div>
+);
+
+// Reusable ExampleImplementation Component
+const ExampleImplementation = () => (
+  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+{`// Example Express.js webhook handler
+app.post('/housetabz/webhook', express.json(), (req, res) => {
+  const signature = req.headers['x-housetabz-signature'];
+  const secret = process.env.HOUSETABZ_WEBHOOK_SECRET;
+
+  if (verifySignature(req.body, signature, secret)) {
+    const { event, transactionId } = req.body;
+    
+    switch(event) {
+      case 'request.authorized':
+        // All roommates approved - activate service
+        await activateService(transactionId);
+        break;
+      
+      case 'request.declined':
+        // A roommate declined - cancel pending activation
+        await cancelPendingRequest(transactionId);
+        break;
+    }
+  }
+  
+  res.json({ received: true });
+});`}
+  </pre>
+);
+
 const Webhooks = () => {
   const [webhookUrl, setWebhookUrl] = useState('');
   const [webhookSecret, setWebhookSecret] = useState('');
@@ -24,14 +86,16 @@ const Webhooks = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [copiedSecret, setCopiedSecret] = useState(false);
 
+  // Fetch webhook configuration
   useEffect(() => {
     const fetchWebhookConfig = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get('http://localhost:3004/api/partners/webhook-config', {
-          headers: { Authorization: `Bearer ${token}` }
+        if (!AUTH_TOKEN) throw new Error("User not authenticated. Please log in.");
+
+        const response = await axios.get(`${API_BASE_URL}/partners/webhook-config`, {
+          headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
         });
-        
+
         if (response.data.webhookUrl) {
           setWebhookUrl(response.data.webhookUrl);
           setWebhookSecret(response.data.webhookSecret);
@@ -46,14 +110,14 @@ const Webhooks = () => {
     fetchWebhookConfig();
   }, []);
 
-  const handleSubmit = async (e) => {
+  // Handle form submission
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('authToken');
       const response = await axios.post(
-        'http://localhost:3004/api/partners/webhook-config',
+        `${API_BASE_URL}/partners/webhook-config`,
         { webhookUrl },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${AUTH_TOKEN}` } }
       );
 
       setWebhookSecret(response.data.webhookSecret);
@@ -62,13 +126,19 @@ const Webhooks = () => {
     } catch (error) {
       console.error('Error configuring webhook:', error);
     }
-  };
+  }, [webhookUrl]);
 
-  const copySecret = () => {
+  // Copy secret to clipboard
+  const copySecret = useCallback(() => {
     navigator.clipboard.writeText(webhookSecret);
     setCopiedSecret(true);
     setTimeout(() => setCopiedSecret(false), 2000);
-  };
+  }, [webhookSecret]);
+
+  // Toggle secret visibility
+  const toggleSecretVisibility = useCallback(() => {
+    setShowSecret((prev) => !prev);
+  }, []);
 
   if (isLoading) {
     return (
@@ -88,6 +158,7 @@ const Webhooks = () => {
         </p>
       </div>
 
+      {/* Success Message */}
       {successMessage && (
         <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center">
           <FaCheck className="mr-2" />
@@ -124,59 +195,19 @@ const Webhooks = () => {
       {/* Webhook Secret */}
       {webhookSecret && (
         <SectionCard title="Webhook Secret" icon={FaKey}>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-grow px-4 py-2 bg-gray-50 border rounded-lg font-mono text-sm">
-                {showSecret ? webhookSecret : '•'.repeat(32)}
-              </div>
-              <button
-                onClick={() => setShowSecret(!showSecret)}
-                className="p-2 text-gray-600 hover:text-teal-600 transition-colors"
-              >
-                {showSecret ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-              </button>
-              <button
-                onClick={copySecret}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:border-teal-600 hover:text-teal-600 transition-colors"
-              >
-                {copiedSecret ? <FaCheck className="mr-2" /> : <FaCopy className="mr-2" />}
-                {copiedSecret ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
-            <p className="text-sm text-gray-600">
-              Use this secret to verify that webhook events came from HouseTabz
-            </p>
-          </div>
+          <WebhookSecret
+            secret={webhookSecret}
+            showSecret={showSecret}
+            onToggleVisibility={toggleSecretVisibility}
+            onCopy={copySecret}
+            copiedSecret={copiedSecret}
+          />
         </SectionCard>
       )}
 
       {/* Example Implementation */}
       <SectionCard title="Example Implementation" icon={FaCode}>
-        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-{`// Example Express.js webhook handler
-app.post('/housetabz/webhook', express.json(), (req, res) => {
-  const signature = req.headers['x-housetabz-signature'];
-  const secret = process.env.HOUSETABZ_WEBHOOK_SECRET;
-
-  if (verifySignature(req.body, signature, secret)) {
-    const { event, transactionId } = req.body;
-    
-    switch(event) {
-      case 'request.authorized':
-        // All roommates approved - activate service
-        await activateService(transactionId);
-        break;
-      
-      case 'request.declined':
-        // A roommate declined - cancel pending activation
-        await cancelPendingRequest(transactionId);
-        break;
-    }
-  }
-  
-  res.json({ received: true });
-});`}
-        </pre>
+        <ExampleImplementation />
       </SectionCard>
 
       {/* Testing Tips */}

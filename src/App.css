@@ -7,6 +7,8 @@
   pointer-events: none;
 }
 
+
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -23,6 +25,10 @@
   @apply text-blue-400 hover:text-blue-300;
 }
 
+.background {
+  @apply bg-gray-900 min-h-screen flex flex-col items-center justify-center text-white text-lg;
+}
+
 /* Keyframes for spinning animation */
 @keyframes App-logo-spin {
   from {
@@ -32,3 +38,5 @@
     transform: rotate(360deg);
   }
 }
+
+

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaKey, FaCode, FaCheckCircle, FaRocket, FaBell, FaCopy, FaCheck, FaChevronRight } from "react-icons/fa";
 import { format } from 'date-fns';
+import ServiceImplementationSteps from "./ServiceImplementationSteps";
+import ServiceIntegrationDetails from "./ServiceIntegrationDetails";
+import ServiceCodeExamples from "./ServiceCodeExamples";
 
 // Framework tabs component with copy functionality
 const FrameworkTabs = ({ examples }) => {
@@ -141,152 +144,62 @@ const IntegrationMenu = () => {
     introduction: {
       title: "Getting Started with HouseTabz",
       content: (
+
+        
         <div className="space-y-6">
-         <p className="text-lg">
-    HouseTabz is an additional payment authorization option that works alongside your existing payment methods. 
-    Choose the integration type that matches your service:
-  </p>
-
-  {/* Integration Type Tabs */}
-  <div className="mt-8">
-    <div className="border-b border-gray-200">
-      <nav className="-mb-px flex space-x-8">
-        <button
-          onClick={() => setActiveTab('one-time')}
-          className={`${
-            activeTab === 'one-time'
-              ? 'border-teal-500 text-teal-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
-        >
-          One-time Payments
-        </button>
-        <button
-          onClick={() => setActiveTab('recurring')}
-          className={`${
-            activeTab === 'recurring'
-              ? 'border-teal-500 text-teal-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
-        >
-          Recurring Expenses
-        </button>
-      </nav>
-    </div>
-
-    {/* Tab Content */}
-    <div className="mt-6">
-      {activeTab === 'one-time' ? (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold">Pay with HouseTabz</h3>
-          <p className="text-gray-600">Split single payments among roommates.</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold mb-2">1. Add Payment Option</h4>
-              <p>Display "Pay with HouseTabz" at checkout</p>
+        <p className="text-lg">
+          HouseTabz is a payment authorization method that works alongside your existing systems. 
+          Choose your service type to see relevant integration steps:
+        </p>
+      
+        {/* Service Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <button
+            onClick={() => setActiveTab('energy')}
+            className={`p-6 rounded-xl border transition-all ${
+              activeTab === 'energy'
+                ? 'border-teal-500 bg-teal-50 shadow-md'
+                : 'border-gray-200 hover:border-teal-300 hover:bg-teal-50/50'
+            }`}
+          >
+            <div className="text-left">
+              <h3 className="text-xl font-bold mb-4">Energy Services</h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Monthly estimated amount shown to users</li>
+                <li>• Optional security deposit split upfront</li>
+                <li>• Monthly bills split via webhook</li>
+              </ul>
             </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold mb-2">2. Split Payment</h4>
-              <p>Roommates approve their portions</p>
+          </button>
+      
+          <button
+            onClick={() => setActiveTab('cleaning')}
+            className={`p-6 rounded-xl border transition-all ${
+              activeTab === 'cleaning'
+                ? 'border-teal-500 bg-teal-50 shadow-md'
+                : 'border-gray-200 hover:border-teal-300 hover:bg-teal-50/50'
+            }`}
+          >
+            <div className="text-left">
+              <h3 className="text-xl font-bold mb-4">Cleaning Services</h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Full amount required upfront</li>
+                <li>• Payment split among roommates</li>
+                <li>• Service starts after all payments</li>
+              </ul>
             </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold mb-2">3. Complete Service</h4>
-              <p>Proceed with service/delivery</p>
-            </div>
+          </button>
+        </div>
+      
+        {/* Show selected service content */}
+        {activeTab && (
+          <div className="mt-8 space-y-6">
+            <ServiceImplementationSteps type={activeTab} />
+            <ServiceIntegrationDetails type={activeTab} />
+            <ServiceCodeExamples type={activeTab} />
           </div>
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="font-medium">Perfect for:</p>
-            <ul className="list-disc ml-6 mt-2">
-              <li>Cleaning services</li>
-              <li>Maintenance fees</li>
-              <li>One-time purchases</li>
-            </ul>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-        <div className="bg-[#E7FAE7] bg-opacity-50 rounded-xl p-6 border border-[#4ADE80] border-opacity-20">
-          <h3 className="text-xl font-bold text-gray-800">Connect to HouseTabz</h3>
-          <p className="text-gray-600 mt-2">Let roommates automatically split their recurring bills.</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            <div className="bg-white rounded-lg p-5 shadow-sm border border-[#4ADE80] border-opacity-20">
-              <div className="flex items-center mb-3">
-                <div className="w-8 h-8 bg-[#4ADE80] bg-opacity-10 rounded-full flex items-center justify-center text-[#4ADE80] font-medium">1</div>
-                <h4 className="font-bold ml-3">Customer Links Account</h4>
-              </div>
-              <p className="text-gray-600">Customer connects their account through HouseTabz - you'll receive their houseId</p>
-            </div>
-            <div className="bg-white rounded-lg p-5 shadow-sm border border-[#4ADE80] border-opacity-20">
-              <div className="flex items-center mb-3">
-                <div className="w-8 h-8 bg-[#4ADE80] bg-opacity-10 rounded-full flex items-center justify-center text-[#4ADE80] font-medium">2</div>
-                <h4 className="font-bold ml-3">Store HouseTabz ID</h4>
-              </div>
-              <p className="text-gray-600">Add a houseId field to your accounts to identify HouseTabz customers</p>
-            </div>
-            <div className="bg-white rounded-lg p-5 shadow-sm border border-[#4ADE80] border-opacity-20">
-              <div className="flex items-center mb-3">
-                <div className="w-8 h-8 bg-[#4ADE80] bg-opacity-10 rounded-full flex items-center justify-center text-[#4ADE80] font-medium">3</div>
-                <h4 className="font-bold ml-3">Auto-split Bills</h4>
-              </div>
-              <p className="text-gray-600">Notify HouseTabz of new bills - we handle the splitting and collection</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 p-6 rounded-lg mt-6">
-          <h4 className="font-bold mb-3">Simple Implementation</h4>
-          <div className="space-y-2">
-            <p>1. Check if account is HouseTabz-enabled:</p>
-            <pre className="bg-gray-100 p-3 rounded text-sm">
-              {`const isHouseTabz = account.housetabzId !== null;`}
-            </pre>
-            
-            <p>2. If yes, send bill details to our webhook:</p>
-            <pre className="bg-gray-100 p-3 rounded text-sm">
-              {`await fetch('https://api.housetabz.com/v1/bills', {
-method: 'POST',
-headers: {
-  'Authorization': 'Bearer YOUR_SECRET_KEY',
-  'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-  houseId: account.housetabzId,
-  billAmount: amount,
-  dueDate: dueDate,
-  description: 'Monthly Service Bill'
-})
-});`}
-            </pre>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="font-medium">Perfect for:</p>
-          <ul className="list-disc ml-6 mt-2">
-            <li>Energy providers</li>
-            <li>Internet services</li>
-            <li>Monthly subscriptions</li>
-            <li>Any recurring service</li>
-          </ul>
-        </div>
-
-        <div className="bg-green-50 p-4 rounded-lg mt-4">
-          <h4 className="font-bold mb-2">Benefits</h4>
-          <ul className="list-disc ml-6 space-y-1">
-            <li>Minimal integration required - just one API call</li>
-            <li>No changes needed to your existing billing system</li>
-            <li>Guaranteed full payment for every bill</li>
-            <li>Automatic reconciliation and reporting</li>
-          </ul>
-        </div>
+        )}
       </div>
-      )}
-    </div>
-  </div>
-</div>
    
       )
     },

@@ -1,6 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { FaCopy, FaEye, FaEyeSlash, FaKey, FaCheckCircle } from "react-icons/fa";
+
+// Constants
+const API_BASE_URL = "http://localhost:3004/api";
+const AUTH_TOKEN = localStorage.getItem("authToken");
+
+// Reusable KeyCard Component
+const KeyCard = ({ type, keyValue, showSecretKey, onToggleVisibility, onCopy, copiedKey }) => {
+  const isSecret = type === "secret";
+  const maskedKey = `${keyValue.slice(0, 8)}${'•'.repeat(24)}`;
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center">
+          <FaKey className={`${isSecret ? "text-red-600" : "text-teal-600"} mr-2`} />
+          <h3 className="text-sm font-semibold text-gray-900">{isSecret ? "Secret Key" : "Public Key"}</h3>
+        </div>
+      </div>
+      <div className="px-6 py-4 flex items-center justify-between bg-gray-50">
+        <code className="font-mono text-sm text-gray-800">
+          {isSecret && !showSecretKey ? maskedKey : keyValue}
+        </code>
+        <div className="flex items-center space-x-4">
+          {isSecret && (
+            <button
+              onClick={onToggleVisibility}
+              className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-teal-600 transition-colors"
+              aria-label={showSecretKey ? "Hide Secret Key" : "Show Secret Key"}
+            >
+              {showSecretKey ? <FaEyeSlash className="mr-1" /> : <FaEye className="mr-1" />}
+              {showSecretKey ? "Hide" : "Show"}
+            </button>
+          )}
+          <button
+            onClick={onCopy}
+            className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-teal-600 transition-colors"
+            aria-label={`Copy ${type} key`}
+          >
+            {copiedKey === type ? (
+              <FaCheckCircle className="mr-1 text-green-500" />
+            ) : (
+              <FaCopy className="mr-1" />
+            )}
+            {copiedKey === type ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const APIKeys = () => {
   const [apiKeys, setApiKeys] = useState([]);
@@ -9,33 +59,26 @@ const APIKeys = () => {
   const [showSecretKey, setShowSecretKey] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
 
+  // Fetch API keys
   useEffect(() => {
     const fetchApiKeys = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        if (!token) throw new Error("User not authenticated. Please log in.");
+        if (!AUTH_TOKEN) throw new Error("User not authenticated. Please log in.");
 
-        const currentUserResponse = await axios.get(
-          "http://localhost:3004/api/partners/current",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const currentUserResponse = await axios.get(`${API_BASE_URL}/partners/current`, {
+          headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+        });
 
         const partnerId = currentUserResponse.data.partner.id;
-        
-        const apiKeysResponse = await axios.get(
-          `http://localhost:3004/api/partners/${partnerId}/api-keys`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const apiKeysResponse = await axios.get(`${API_BASE_URL}/partners/${partnerId}/api-keys`, {
+          headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+        });
 
         setApiKeys(apiKeysResponse.data.apiKeys);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching API keys:", err);
         setError("Failed to load API keys. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
@@ -43,15 +86,17 @@ const APIKeys = () => {
     fetchApiKeys();
   }, []);
 
-  const handleCopy = (key, type) => {
+  // Copy key to clipboard
+  const handleCopy = useCallback((key, type) => {
     navigator.clipboard.writeText(key);
     setCopiedKey(type);
     setTimeout(() => setCopiedKey(null), 2000);
-  };
+  }, []);
 
-  const maskKey = (key) => {
-    return `${key.slice(0, 8)}${'•'.repeat(24)}`;
-  };
+  // Toggle secret key visibility
+  const toggleSecretKeyVisibility = useCallback(() => {
+    setShowSecretKey((prev) => !prev);
+  }, []);
 
   if (loading) {
     return (
@@ -84,67 +129,20 @@ const APIKeys = () => {
       <div className="space-y-6">
         {apiKeys.map((key) => (
           <div key={key.id} className="space-y-4">
-            {/* Public Key Card */}
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center">
-                  <FaKey className="text-teal-600 mr-2" />
-                  <h3 className="text-sm font-semibold text-gray-900">Public Key</h3>
-                </div>
-              </div>
-              <div className="px-6 py-4 flex items-center justify-between bg-gray-50">
-                <code className="font-mono text-sm text-gray-800">{key.api_key}</code>
-                <button
-                  onClick={() => handleCopy(key.api_key, 'public')}
-                  className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-teal-600 transition-colors"
-                >
-                  {copiedKey === 'public' ? (
-                    <FaCheckCircle className="mr-1 text-green-500" />
-                  ) : (
-                    <FaCopy className="mr-1" />
-                  )}
-                  {copiedKey === 'public' ? 'Copied!' : 'Copy'}
-                </button>
-              </div>
-            </div>
-
-            {/* Secret Key Card */}
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center">
-                  <FaKey className="text-red-600 mr-2" />
-                  <h3 className="text-sm font-semibold text-gray-900">Secret Key</h3>
-                </div>
-              </div>
-              <div className="px-6 py-4 flex items-center justify-between bg-gray-50">
-                <code className="font-mono text-sm text-gray-800">
-                  {showSecretKey ? key.secret_key : maskKey(key.secret_key)}
-                </code>
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => setShowSecretKey(!showSecretKey)}
-                    className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-teal-600 transition-colors"
-                  >
-                    {showSecretKey ? (
-                      <><FaEyeSlash className="mr-1" /> Hide</>
-                    ) : (
-                      <><FaEye className="mr-1" /> Show</>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => handleCopy(key.secret_key, 'secret')}
-                    className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-teal-600 transition-colors"
-                  >
-                    {copiedKey === 'secret' ? (
-                      <FaCheckCircle className="mr-1 text-green-500" />
-                    ) : (
-                      <FaCopy className="mr-1" />
-                    )}
-                    {copiedKey === 'secret' ? 'Copied!' : 'Copy'}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <KeyCard
+              type="public"
+              keyValue={key.api_key}
+              onCopy={() => handleCopy(key.api_key, "public")}
+              copiedKey={copiedKey}
+            />
+            <KeyCard
+              type="secret"
+              keyValue={key.secret_key}
+              showSecretKey={showSecretKey}
+              onToggleVisibility={toggleSecretKeyVisibility}
+              onCopy={() => handleCopy(key.secret_key, "secret")}
+              copiedKey={copiedKey}
+            />
           </div>
         ))}
       </div>
