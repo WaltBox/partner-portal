@@ -8,6 +8,7 @@ import VerifyPartner from './screens/VerifyPartner';
 import CompleteRegistration from './screens/CompleteRegistration';
 import Login from './screens/Login';
 import LandingPage from './screens/LandingPage';
+// import './prism-custom.css';
 import './index.css';
 
 function App() {

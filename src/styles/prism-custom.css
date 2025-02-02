@@ -1,0 +1,83 @@
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #D4D4D4;
+  font-family: Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+  font-size: 0.875rem;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  background: transparent !important;
+}
+
+/* Keywords */
+.token.keyword {
+  color: #569CD6;
+}
+
+/* Function names */
+.token.function {
+  color: #DCDCAA;
+}
+
+/* Strings */
+.token.string {
+  color: #CE9178;
+}
+
+/* Numbers */
+.token.number {
+  color: #B5CEA8;
+}
+
+/* Comments */
+.token.comment {
+  color: #6A9955;
+}
+
+/* Punctuation */
+.token.punctuation {
+  color: #D4D4D4;
+}
+
+/* Objects */
+.token.property {
+  color: #9CDCFE;
+}
+
+/* Operators */
+.token.operator {
+  color: #D4D4D4;
+  background: transparent;
+}
+
+/* Booleans */
+.token.boolean {
+  color: #569CD6;
+}
+
+/* Function parameters */
+.token.parameter {
+  color: #9CDCFE;
+}
+
+/* Class names */
+.token.class-name {
+  color: #4EC9B0;
+}
+
+pre[class*="language-"] {
+  padding: 0;
+  margin: 0;
+  overflow: auto;
+  background: transparent !important;
+}

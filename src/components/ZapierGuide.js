@@ -1,173 +1,206 @@
 import React from "react";
-import { 
-  FaBolt, 
-  FaArrowRight, 
-  FaCode, 
-  FaCheckCircle, 
-  FaExclamationTriangle 
+import {
+  FaArrowRight,
+  FaCode,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaCopy,
+  FaCheck,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 
+// A simple StepCard component with a minimal badge and title.
 const StepCard = ({ number, title, children }) => (
-  <div className="mb-8">
+  <div className="mb-10">
     <div className="flex items-center mb-4">
-      <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-[#FF4F00] font-bold mr-3">
+      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
         {number}
       </div>
-      <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-xl font-medium text-gray-800">{title}</h3>
     </div>
-    <div className="ml-11">{children}</div>
+    <div className="ml-12">{children}</div>
   </div>
 );
 
-const CodeBlock = ({ title, code }) => (
-  <div className="mt-4 bg-[#111111] rounded-lg overflow-hidden">
-    {title && (
-      <div className="bg-gray-800 px-4 py-2 text-gray-400 text-sm">
-        {title}
-      </div>
-    )}
-    <pre className="p-4 text-gray-100 overflow-x-auto">
-      <code>{code}</code>
-    </pre>
-  </div>
-);
+// A CodeBlock component styled to be clear and professional.
+const CodeBlock = ({ title, code }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative mt-4">
+      {title && (
+        <div className="bg-gray-100 px-3 py-1 text-xs text-gray-600 border border-gray-200 rounded-t-md">
+          {title}
+        </div>
+      )}
+      <pre className="bg-gray-50 p-4 border border-t-0 border-gray-200 rounded-b-md text-gray-800 font-mono text-sm overflow-x-auto">
+        <code>{code}</code>
+      </pre>
+      <button
+        onClick={handleCopy}
+        className="absolute top-2 right-2 bg-gray-100 hover:bg-gray-200 p-1 rounded transition-colors"
+        title="Copy code"
+      >
+        {copied ? (
+          <FaCheck className="text-green-500" />
+        ) : (
+          <FaCopy className="text-gray-500" />
+        )}
+      </button>
+    </div>
+  );
+};
 
 const ZapierGuide = () => {
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#FF4F00] to-[#FF6B2B] rounded-lg p-8 mb-8 text-white">
-        <div className="flex items-center mb-4">
-          <FaBolt className="text-3xl mr-3" />
-          <h2 className="text-2xl font-bold">Connect HouseTabz to Your Zaps</h2>
+    <div className="max-w-3xl mx-auto px-6 py-10 space-y-12">
+      {/* Header */}
+      <header className="border-b pb-6">
+        <div className="flex items-center space-x-3">
+          <FaExternalLinkAlt className="text-blue-600 text-2xl" />
+          <h1 className="text-3xl font-semibold text-gray-900">
+            Connect HouseTabz with Zapier
+          </h1>
         </div>
-        <p className="text-white">
-          When roommates approve a payment split through HouseTabz, we'll trigger your existing service activation Zap - 
-          working seamlessly with your current automation flow.
+        <p className="mt-3 text-gray-600 text-base">
+          Follow these steps to integrate HouseTabz with your Zapier workflow.
+          When a payment split is approved, your Zap will trigger automatically.
         </p>
+      </header>
+
+      {/* Step 1: Configure Zap Trigger */}
+      <StepCard number="1" title="Configure Your Payment Success Zap">
+        <div className="bg-white p-6 border rounded shadow-sm">
+          <p className="text-gray-700 mb-4 text-sm">
+            Update your existing service activation Zap to listen for HouseTabz events.
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start">
+              <div className="w-6 h-6 flex-shrink-0 bg-blue-50 rounded-full flex items-center justify-center mt-1 mr-3">
+                <FaArrowRight className="text-blue-600 text-sm" />
+              </div>
+              <div>
+                <h4 className="text-base font-medium text-gray-800 mb-1">
+                  Locate Your Activation Zap
+                </h4>
+                <p className="text-gray-600 text-sm">
+                  Find the Zap that runs when a payment succeeds (for example, “Stripe Payment Completed”).
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="w-6 h-6 flex-shrink-0 bg-blue-50 rounded-full flex items-center justify-center mt-1 mr-3">
+                <FaCode className="text-blue-600 text-sm" />
+              </div>
+              <div>
+                <h4 className="text-base font-medium text-gray-800 mb-1">
+                  Add a Webhook Trigger
+                </h4>
+                <p className="text-gray-600 text-sm mb-2">
+                  Use Zapier’s "Webhooks by Zapier" to create a trigger.
+                </p>
+                <CodeBlock
+                  title="Zapier Webhook Setup"
+                  code={`1. Select "Webhooks by Zapier" as the app.
+2. Choose the "Catch Hook" trigger.
+3. Copy the webhook URL provided by Zapier.
+4. Paste it into your HouseTabz dashboard settings.`}
+                />
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="w-6 h-6 flex-shrink-0 bg-blue-50 rounded-full flex items-center justify-center mt-1 mr-3">
+                <FaCode className="text-blue-600 text-sm" />
+              </div>
+              <div>
+                <h4 className="text-base font-medium text-gray-800 mb-1">
+                  Map the Payload
+                </h4>
+                <p className="text-gray-600 text-sm mb-2">
+                  HouseTabz sends standard payment data. Ensure you map these fields:
+                </p>
+                <CodeBlock
+                  title="Webhook Payload Example"
+                  code={`{
+  "event": "request.authorized",
+  "transactionId": "HT-123456",
+  "status": "authorized",
+  "pricing": 99.99,
+  "customer_id": "user_123"
+}`}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </StepCard>
+
+      {/* Step 2: Connect HouseTabz to Zapier */}
+      <StepCard number="2" title="Connect HouseTabz to Zapier">
+        <div className="bg-white p-6 border rounded shadow-sm">
+          <p className="text-gray-700 mb-4 text-sm">
+            Configure your HouseTabz dashboard to forward authorization events to your Zapier webhook.
+          </p>
+          <div className="flex items-start">
+            <div className="w-6 h-6 flex-shrink-0 bg-blue-50 rounded-full flex items-center justify-center mt-1 mr-3">
+              <FaCheckCircle className="text-blue-600 text-sm" />
+            </div>
+            <div>
+              <h4 className="text-base font-medium text-gray-800 mb-1">
+                Quick Setup
+              </h4>
+              <ol className="list-decimal ml-6 text-sm text-gray-600 space-y-1">
+                <li>Log in to your HouseTabz dashboard.</li>
+                <li>Navigate to the Zapier integration settings.</li>
+                <li>Paste your Zapier webhook URL and save the changes.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </StepCard>
+
+      {/* Step 3: Test Your Integration */}
+      <div className="bg-white p-6 border rounded shadow-sm">
+        <div className="flex items-center mb-4">
+          <FaCheckCircle className="text-blue-600 mr-3" />
+          <h3 className="text-xl font-medium text-gray-900">Test Your Integration</h3>
+        </div>
+        <ol className="list-decimal ml-6 text-sm text-gray-700 space-y-2">
+          <li>Enable test mode in your HouseTabz dashboard.</li>
+          <li>Simulate a payment split approval.</li>
+          <li>Verify that your Zap is triggered as expected.</li>
+          <li>Ensure the service activation proceeds correctly.</li>
+        </ol>
       </div>
 
-      {/* Main Content */}
-      <div className="space-y-8">
-        <StepCard number="1" title="Add HouseTabz to Your Payment Success Zap">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-            <p className="text-gray-600 mb-4">
-              Point your existing service activation Zap to listen for HouseTabz authorizations:
-            </p>
-            
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-1 mr-3">
-                  <FaArrowRight className="text-[#FF4F00] text-sm" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-800 mb-2">Find Your Service Activation Zap</h4>
-                  <p className="text-gray-600">Locate the Zap that runs when payments succeed (e.g., "When Stripe payment is completed")</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-1 mr-3">
-                  <FaCode className="text-[#FF4F00] text-sm" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-800 mb-2">Add Webhook Trigger</h4>
-                  <p className="text-gray-600 mb-2">Create a new trigger in your Zap:</p>
-                  <CodeBlock
-                    title="Zapier Webhook Configuration"
-                    code={`1. Choose "Webhooks by Zapier" app
-2. Select "Catch Raw Hook" trigger
-3. Copy the webhook URL Zapier provides`}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-1 mr-3">
-                  <FaCode className="text-[#FF4F00] text-sm" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-800 mb-2">Map Our Fields</h4>
-                  <p className="text-gray-600 mb-2">HouseTabz sends standard payment success data:</p>
-                  <CodeBlock
-                    title="Webhook Payload Structure"
-                    code={`{
-  "event": "request.authorized",     // Payment authorized
-  "transactionId": "HT-123456",     // Your transaction reference
-  "status": "authorized",           // Always "authorized" for success
-  "pricing": 99.99,                // Payment amount
-  "customer_id": "user_123"        // Your customer reference
-}`}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </StepCard>
-
-        <StepCard number="2" title="Connect HouseTabz to Zapier">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-            <p className="text-gray-600 mb-4">
-              Tell HouseTabz where to send authorization events:
-            </p>
-
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-1 mr-3">
-                  <FaCheckCircle className="text-[#FF4F00] text-sm" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-800 mb-2">Quick Setup</h4>
-                  <ol className="list-decimal ml-4 text-gray-600 space-y-2">
-                    <li>Go to your HouseTabz dashboard settings</li>
-                    <li>Paste your Zapier webhook URL</li>
-                    <li>Save changes</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-        </StepCard>
-
-        {/* Testing Section */}
-        <div className="bg-orange-50 border border-orange-100 rounded-lg p-6">
-          <div className="flex items-center mb-4">
-            <FaCheckCircle className="text-[#FF4F00] mr-2" />
-            <h3 className="text-lg font-semibold text-gray-900">Test the Integration</h3>
-          </div>
-          <ol className="list-decimal ml-6 space-y-3 text-gray-800">
-            <li>Enable test mode in HouseTabz</li>
-            <li>Create a test connection with roommates</li>
-            <li>Approve all portions in the test environment</li>
-            <li>Check if your Zap runs as expected</li>
-            <li>Verify service activation works normally</li>
-          </ol>
+      {/* Common Issues */}
+      <div className="bg-white p-6 border rounded shadow-sm">
+        <div className="flex items-center mb-4">
+          <FaExclamationTriangle className="text-gray-600 mr-3" />
+          <h3 className="text-xl font-medium text-gray-900">Common Issues</h3>
         </div>
+        <ul className="list-disc ml-6 text-sm text-gray-700 space-y-1">
+          <li>Ensure the webhook URL in your dashboard is correct.</li>
+          <li>Verify that your Zap is active.</li>
+          <li>Double-check your field mapping in Zapier.</li>
+          <li>Start with small test amounts before scaling up.</li>
+        </ul>
+      </div>
 
-        {/* Common Issues */}
-        <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-6">
-          <div className="flex items-center mb-4">
-            <FaExclamationTriangle className="text-yellow-500 mr-2" />
-            <h3 className="text-lg font-semibold text-yellow-900">Common Issues</h3>
-          </div>
-          <ul className="list-disc ml-6 space-y-2 text-yellow-800">
-            <li>Double-check your webhook URL is correct</li>
-            <li>Ensure your Zap is turned on</li>
-            <li>Verify field mapping in your Zap</li>
-            <li>Start with small test amounts</li>
-          </ul>
-        </div>
-
-        {/* Help Section */}
-        <div className="text-center py-8">
-          <button className="bg-[#FF4F00] text-white px-8 py-3 rounded-lg hover:bg-[#E64500] transition-colors inline-flex items-center">
-            <FaBolt className="mr-2" />
-            Get Integration Help
-          </button>
-          <p className="mt-2 text-gray-600">
-            Our team typically responds within 2 hours
-          </p>
-        </div>
+      {/* Help Section */}
+      <div className="text-center">
+        <button className="bg-blue-600 text-white px-10 py-3 rounded-full text-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center shadow">
+          Get Integration Help
+        </button>
+        <p className="mt-3 text-sm text-gray-600">
+          Our support team typically responds within 2 hours.
+        </p>
       </div>
     </div>
   );
